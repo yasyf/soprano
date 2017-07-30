@@ -1,4 +1,3 @@
-import tempfile
 from flask import request, jsonify, render_template, session
 from app import app
 from audio import transcribe_all
@@ -15,7 +14,9 @@ def index_view():
 
 @app.route('/submit', methods=['POST'])
 def submit_view():
-  file, path = tempfile.mkstemp()
-  request.files['audio'].save(path)
-  transcripts = transcribe_all(path, session['watson'])
+  transcripts = transcribe_all(request.files['audio'], session['watson'])
   return jsonify({'transcripts': transcripts})
+
+@app.route('/control', methods=['POST'])
+def control_view():
+  pass

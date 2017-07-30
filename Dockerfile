@@ -2,7 +2,7 @@ FROM ubuntu
 
 LABEL authors="Yasyf Mohamedali <yasyfm@gmail.com>"
 
-CMD ["/bin/bash"]
+CMD ["python", "app.py"]
 
 EXPOSE 5000
 WORKDIR /app

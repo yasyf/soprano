@@ -1,10 +1,17 @@
-import os
+import os, tempfile
 from flask import Flask
+from flask_session import Session
+
+SESSION_TYPE = 'filesystem'
+SESSION_FILE_DIR = tempfile.mkdtemp()
 
 app = Flask(__name__)
+app.config.from_object(__name__)
 app.secret_key = os.environ.get('SK')
 dev = bool(os.environ.get('DEV', True))
 app.debug = dev
+
+Session(app)
 
 from routes import *
 

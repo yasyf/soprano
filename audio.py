@@ -17,20 +17,28 @@ def _detect_speakers(result):
   output = []
   index = 0
 
+  current_speaker = None
+  current_words = []
+  current_final = False
+
   for segment in result['speaker_labels']:
-    current_words = []
+    if segment['speaker'] != current_speaker:
+      if current_words:
+        output.append({
+          'speaker': current_speaker,
+          'transcript': current_words,
+          'final': current_final
+        })
+
+      current_speaker = segment['speaker']
+      current_words = []
+      current_final = False
+
     end = segment['to']
 
     while index < len(words) and words[index][-1] <= end:
       current_words.append(words[index][0])
       index += 1
-
-    if current_words:
-      output.append({
-        'speaker': segment['speaker'],
-        'transcript': current_words,
-        'final': segment['final']
-      })
 
   return output
 

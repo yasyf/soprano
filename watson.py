@@ -35,6 +35,7 @@ class Watson(object):
         'sequence_id': self.sequence_id,
         'speaker_labels': True,
         'smart_formatting': True,
+        'inactivity_timeout': -1,
       },
       file,
       {'Content-Type': 'audio/wav'}
