@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Test</title>
+  <script src="https://cdn.webrtc-experiment.com/MediaStreamRecorder.js"> </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fetch/2.0.3/fetch.min.js" integrity="sha256-aB35laj7IZhLTx58xw/Gm1EKOoJJKZt6RY+bH1ReHxs=" crossorigin="anonymous"></script>
+</head>
+<body>
+  <script>
+    var chunkInterval = 10 * 1000;
+    var mediaConstraints = {audio: true};
+
+    function uploadBlob(blob) {
+      var timestamp = (new Date).toISOString().replace(/:|\./g, '-');
+      var file = new File([blob], 'msr-' + timestamp + '.wav', {type: 'audio/wav'});
+      var formData = new FormData();
+      formData.append('audio', file);
+      fetch('/submit', {method: 'POST', body: formData}).then(resp => resp.json()).then(resp => console.log(resp));
+    }
+
+    function onMediaSuccess(stream) {
+      var mediaRecorder = new MediaStreamRecorder(stream);
+      mediaRecorder.mimeType = 'audio/wav';
+      mediaRecorder.ondataavailable = uploadBlob;
+      mediaRecorder.start(chunkInterval);
+    }
+
+    function onMediaError(e) {
+      console.error('media error', e);
+    }
+
+    navigator.getUserMedia(mediaConstraints, onMediaSuccess, onMediaError);
+  </script>
+</body>
+</html>

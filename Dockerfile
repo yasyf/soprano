@@ -4,6 +4,9 @@ LABEL authors="Yasyf Mohamedali <yasyfm@gmail.com>"
 
 CMD ["/bin/bash"]
 
+EXPOSE 5000
+WORKDIR /app
+
 RUN apt-get update; \
   apt-get install -y git build-essential; \
   apt-get install -y cmake \
@@ -17,7 +20,8 @@ RUN apt-get update; \
   python \
   python-dev \
   python-pip \
-  libpulse-dev;
+  libpulse-dev \
+  python-pyaudio;
 
 RUN git clone https://github.com/aalto-speech/AaltoASR.git; \
   cd AaltoASR; \
@@ -33,6 +37,8 @@ RUN git clone https://github.com/aalto-speech/speaker-diarization.git; \
   ln -s ../AaltoASR/build ./ ; \
   ln -s ../AaltoASR/build/aku/feacat ./ ; \
   pip install numpy scipy docopt lxml;
+
+COPY . ./
 
 RUN pip install --upgrade pip setuptools wheel; \
   pip install -r requirements.txt;
