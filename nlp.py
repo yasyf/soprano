@@ -19,3 +19,5 @@ def extract_actions(transcripts):
     current_words.extend(transcript['transcript'])
 
   return actions
+
+

@@ -2,7 +2,7 @@ FROM ubuntu
 
 LABEL authors="Yasyf Mohamedali <yasyfm@gmail.com>"
 
-CMD ["gunicorn", "-b", "127.0.0.1:5000", "-t", "90", "-w", "5", "app:app"]
+CMD ./run.sh
 
 EXPOSE 5000
 WORKDIR /app
@@ -21,17 +21,10 @@ RUN apt-get update; \
   python-dev \
   python-pip \
   libpulse-dev \
-  python-pyaudio;
+  python-pyaudio \
+  redis-server;
 
-RUN git clone https://github.com/aalto-speech/AaltoASR.git; \
-  cd AaltoASR; \
-  mkdir build; \
-  cd build; \
-  cmake .. ; \
-  make; \
-  make install;
-
-RUN git clone https://github.com/aalto-speech/speaker-diarization.git; \
+RUN git clone https://github.com/VarunMohan/aaaaaalto speaker-diarization; \
   cd /speaker-diarization; \
   ln -s ../AaltoASR ./ ; \
   ln -s ../AaltoASR/build ./ ; \
@@ -46,3 +39,5 @@ RUN pip install --upgrade pip setuptools wheel; \
 RUN git clone https://github.com/suryabhupa/simple-nlu simple_nlu; \
   cd /simple_nlu; \
   pip install -r requirements.txt;
+
+RUN git clone https://github.com/josephwandile/soprano;
