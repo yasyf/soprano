@@ -9,7 +9,7 @@ def _transcribe(file):
   except sr.UnknownValueError:
     return ''
 
-def _detect_speakers(result):
+def _detect_speakers(result, speakers):
   words = []
   for res in result['results']:
     words.extend(res['alternatives'][0]['timestamps'])
@@ -25,7 +25,7 @@ def _detect_speakers(result):
     if segment['speaker'] != current_speaker:
       if current_words:
         output.append({
-          'speaker': current_speaker,
+          'speaker': speakers.get(current_speaker, 'SPEAKER_{}'.format(current_speaker)),
           'transcript': current_words,
           'final': current_final
         })
@@ -42,6 +42,10 @@ def _detect_speakers(result):
 
   return output
 
-def transcribe_all(file, watson):
+def transcribe_all(file, watson, speakers):
   result = watson.recognize(file)
-  return _detect_speakers(result)
+  return _detect_speakers(result, speakers)
+
+def train(file, watson):
+  result = watson.recognize(file)
+  return map(lambda l: l['speaker'], result['speaker_labels'])
