@@ -10,13 +10,15 @@ from nlp import extract_actions
 def reset_session():
   session['id'] = str(uuid.uuid4())
 
+def assign_g():
+  g.training = Training(session['id'])
+  g.watson = Watson(session['id'])
+
 @app.before_request
 def preprocess_request():
   if 'id' not in session:
     reset_session()
-
-  g.training = Training(session['id'])
-  g.watson = Watson(session['id'])
+  assign_g()
 
 @app.route('/')
 def index_view():
@@ -25,6 +27,7 @@ def index_view():
 @app.route('/reset', methods=['POST'])
 def reset_view():
   reset_session()
+  assign_g()
   return jsonify({'training': g.training.current})
 
 @app.route('/submit', methods=['POST'])

@@ -5,12 +5,14 @@ LABEL authors="Yasyf Mohamedali <yasyfm@gmail.com>"
 CMD ./run.sh
 
 EXPOSE 5000
+EXPOSE 3000
 WORKDIR /app
 
 ARG GIT_CREDS
 
 RUN apt-get update; \
-  apt-get install -y git build-essential; \
+  apt-get install -y git build-essential curl; \
+  curl -sL https://deb.nodesource.com/setup_6.x | bash -; \
   apt-get install -y cmake \
   swig \
   libsndfile1-dev \
@@ -24,7 +26,8 @@ RUN apt-get update; \
   python-pip \
   libpulse-dev \
   python-pyaudio \
-  redis-server;
+  redis-server \
+  nodejs;
 
 RUN git clone https://$GIT_CREDS@github.com/VarunMohan/aaaaaalto speaker-diarization; \
   cd ./speaker-diarization; \
@@ -42,4 +45,6 @@ RUN git clone https://$GIT_CREDS@github.com/suryabhupa/simple-nlu simple_nlu; \
   cd ./simple_nlu; \
   pip install -r requirements.txt;
 
-RUN git clone https://$GIT_CREDS@github.com/josephwandile/soprano;
+RUN git clone https://$GIT_CREDS@github.com/josephwandile/soprano; \
+  cd ./soprano; \
+  npm install;

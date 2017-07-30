@@ -16,27 +16,52 @@ class Watson(object):
 
     if not self.conn.exists(self.key('urls')):
       self.conn.setnx(self.key('urls'), json.dumps(self.post(self.api_path('sessions'))))
-    self.urls = json.loads(self.conn.get(self.key('urls')))
+
+    if not self.conn.exists(self.key('cookies')):
+      self.conn.setnx(self.key('cookies'), json.dumps({}))
+
+    for name, value in json.loads(self.conn.get(self.key('cookies'))).items():
+      self.session.cookies.set(name, value)
 
   def key(self, path):
     return '{}/{}'.format(self.id, path)
 
   def post(self, path, params=None, data=None, headers=None):
-    return self.session.post(
+    res = self.session.post(
       path,
       params=(params or {}),
       auth=(self.USERNAME, self.PASSWORD),
       headers=(headers or {}),
       data=data,
+      cookies=self.cookies,
     ).json()
 
+    cookies = requests.utils.dict_from_cookiejar(self.session.cookies)
+    self.conn.set(self.key('cookies'), json.dumps(cookies))
+
+    return res
+
   def get(self, path, params=None, headers=None):
-    return self.session.get(
+    res = self.session.get(
       path,
       params=(params or {}),
       auth=(self.USERNAME, self.PASSWORD),
       headers=(headers or {}),
+      cookies=self.cookies,
     ).json()
+
+    cookies = requests.utils.dict_from_cookiejar(self.session.cookies)
+    self.conn.set(self.key('cookies'), json.dumps(cookies))
+
+    return res
+
+  @property
+  def cookies(self):
+    return requests.utils.cookiejar_from_dict(json.loads(self.conn.get(self.key('cookies')) or '{}'))
+
+  @property
+  def urls(self):
+    return json.loads(self.conn.get(self.key('urls')))
 
   @property
   def last_sequence_id(self):

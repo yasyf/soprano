@@ -9,7 +9,7 @@ app = Flask(__name__)
 app.secret_key = os.environ.get('SK')
 dev = bool(os.environ.get('DEV', True))
 app.debug = dev
-app.session_interface = RedisSessionInterface(redis.StrictRedis(), 'session:')
+app.session_interface = RedisSessionInterface(redis.StrictRedis(), 'app-session:')
 
 CORS(app, supports_credentials=True)
 

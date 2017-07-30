@@ -6,13 +6,13 @@ conn = redis.StrictRedis()
 def _extract_actions(id, speakers, speaker, phrase):
   with redis_lock.Lock(conn, '{}/{}/lock'.format(id, 'summary')):
     key = '{}/{}'.format(id, 'summary')
-    if redis.exists(key):
-      summary = pickle.loads(redis.get(key))
+    if conn.exists(key):
+      summary = pickle.loads(conn.get(key))
     else:
       summary = ExecutiveSummaryEvent(speakers)
 
-    res = tag_speech(speaker, summary, phrase)
-    redis.set(key, pickle.dumps(summary))
+    res = tag_speech(speaker, summary, speakers, phrase)
+    conn.set(key, pickle.dumps(summary))
     return res
 
 def extract_actions(id, speakers, transcripts):
@@ -23,14 +23,14 @@ def extract_actions(id, speakers, transcripts):
 
   for transcript in transcripts:
     if transcript['username'] != current_speaker:
-      phrase = ' '.join(current_words) + '.'
-      actions.extend(_extract_actions(id, speakers, current_speaker, phrase))
+      actions.extend(_extract_actions(id, speakers, current_speaker, ' '.join(current_words) + '.'))
 
       current_words = []
       current_speaker = transcript['username']
 
     current_words.extend(transcript['transcript'])
 
+  actions.extend(_extract_actions(id, speakers, current_speaker, ' '.join(current_words) + '.'))
   return actions
 
 
