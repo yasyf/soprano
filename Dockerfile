@@ -42,3 +42,7 @@ COPY . ./
 
 RUN pip install --upgrade pip setuptools wheel; \
   pip install -r requirements.txt;
+
+RUN git clone https://github.com/suryabhupa/simple-nlu simple_nlu; \
+  cd /simple_nlu; \
+  pip install -r requirements.txt;

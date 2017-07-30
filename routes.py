@@ -4,6 +4,7 @@ from audio import transcribe_all, train, detect_speakers
 from watson import Watson
 from training import Training
 from constants import STARTING, STOPPING
+from nlp import extract_actions
 
 def reset_session():
   session['watson'] = Watson()
@@ -47,7 +48,8 @@ def observe_view(sequence_id):
   if 'speaker_labels' not in transcripts:
     return jsonify({'retry': True, 'error': False, 'id': sequence_id})
   transcripts = detect_speakers(transcripts, session['training'].speakers)
-  return jsonify({'retry': False, 'error': False, 'transcripts': transcripts, 'id': sequence_id})
+  actions = extract_actions(transcripts)
+  return jsonify({'retry': False, 'error': False, 'transcripts': transcripts, 'id': sequence_id, 'actions': actions})
 
 @app.route('/control', methods=['POST'])
 def control_view():
