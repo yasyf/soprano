@@ -51,7 +51,7 @@ def transcribe_all(file, watson, speakers):
   return detect_speakers(result, speakers), id_
 
 def train(file, watson):
-  result, _ = watson.recognize(file)
+  result, id_ = watson.recognize(file)
   if 'speaker_labels' not in result:
     return []
-  return map(lambda l: l['speaker'], result['speaker_labels'])
+  return map(lambda l: l['speaker'], result['speaker_labels']), id_

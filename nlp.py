@@ -18,6 +18,9 @@ def _extract_actions(id, speakers, speaker, phrase):
 def extract_actions(id, speakers, transcripts):
   actions = []
 
+  if not transcripts:
+    return actions
+
   current_words = []
   current_speaker = transcripts[0]['username']
 

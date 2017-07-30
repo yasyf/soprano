@@ -33,8 +33,8 @@ def reset_view():
 @app.route('/submit', methods=['POST'])
 def submit_view():
   if g.training.current:
-    labels = train(request.files['audio'], g.watson)
-    g.training.add(labels)
+    labels, id_ = train(request.files['audio'], g.watson)
+    g.training.add(labels, id_)
     return jsonify({'training': g.training.current})
   else:
     transcripts, id_ = transcribe_all(request.files['audio'], g.watson, g.training.speakers)
@@ -53,6 +53,8 @@ def observe_view(sequence_id):
     return jsonify({'retry': False, 'error': True, 'id': sequence_id})
   if 'speaker_labels' not in transcripts:
     return jsonify({'retry': True, 'error': False, 'id': sequence_id})
+  if g.training.current or sequence_id in g.training.segments:
+    return jsonify({'retry': False, 'error': False, 'training': g.training.current})
   transcripts = detect_speakers(transcripts, g.training.speakers)
   actions = extract_actions(session['id'], g.training.speakers, transcripts)
   return jsonify({'retry': False, 'error': False, 'transcripts': transcripts, 'id': sequence_id, 'actions': actions})
