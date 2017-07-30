@@ -17,7 +17,7 @@ def detect_speakers(result, speakers):
   output = []
   index = 0
 
-  current_speaker = None
+  last_speaker = None
 
   for segment in result['speaker_labels']:
     current_words = []
@@ -29,15 +29,15 @@ def detect_speakers(result, speakers):
 
     if current_words:
       output.append({
-        'new': segment['speaker'] != current_speaker,
-        'last': current_speaker,
+        'new': segment['speaker'] != last_speaker,
+        'last': last_speaker,
         'username': 'SPEAKER_{}'.format(segment['speaker']),
-        'speaker': speakers.get(current_speaker, 'SPEAKER_{}'.format(segment['speaker'])),
+        'speaker': speakers.get(str(segment['speaker']), 'SPEAKER_{}'.format(segment['speaker'])),
         'transcript': current_words,
         'final': segment['final'],
       })
 
-    current_speaker = segment['speaker']
+    last_speaker = segment['speaker']
 
   return output
 
@@ -53,5 +53,5 @@ def transcribe_all(file, watson, speakers):
 def train(file, watson):
   result, id_ = watson.recognize(file)
   if 'speaker_labels' not in result:
-    return []
+    return [], id_
   return map(lambda l: l['speaker'], result['speaker_labels']), id_

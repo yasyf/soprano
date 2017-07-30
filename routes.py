@@ -49,8 +49,8 @@ def observe_view(sequence_id):
   if not sequence_id:
     return jsonify({'error': True})
   transcripts = g.watson.observe(sequence_id)
-  if transcripts.get('code') == 404:
-    return jsonify({'retry': False, 'error': True, 'id': sequence_id})
+  if not transcripts.get('training') and transcripts.get('code') != 200:
+    return jsonify({'retry': False, 'error': True, 'code': transcripts.get('code'), 'id': sequence_id})
   if 'speaker_labels' not in transcripts:
     return jsonify({'retry': True, 'error': False, 'id': sequence_id})
   if g.training.current or sequence_id in g.training.segments:

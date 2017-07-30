@@ -36,7 +36,7 @@ class Training(object):
     self.current = {}
     labels = self.labels.pop(email)
     if labels:
-      label = sorted(labels, key=labels.count)[-1]
+      label = str(sorted(labels, key=labels.count)[-1])
       self.speakers[label] = email
 
     self.conn.set(self.key('current'), json.dumps(self.current))
