@@ -15,7 +15,9 @@
       var file = new File([blob], 'msr-' + timestamp + '.wav', {type: 'audio/wav'});
       var formData = new FormData();
       formData.append('audio', file);
-      fetch('/submit', {method: 'POST', body: formData}).then(resp => resp.json()).then(resp => console.log(resp));
+      fetch('/submit', {method: 'POST', body: formData, credentials: 'same-origin'})
+        .then(resp => resp.json())
+        .then(resp => console.log(resp));
     }
 
     function onMediaSuccess(stream) {

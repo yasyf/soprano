@@ -1,17 +1,15 @@
 import os, tempfile
 from flask import Flask
-from flask_session import Session
-
-SESSION_TYPE = 'filesystem'
-SESSION_FILE_DIR = tempfile.mkdtemp()
+from flask_session import FileSystemSessionInterface
+from flask_cors import CORS
 
 app = Flask(__name__)
-app.config.from_object(__name__)
 app.secret_key = os.environ.get('SK')
 dev = bool(os.environ.get('DEV', True))
 app.debug = dev
+app.session_interface = FileSystemSessionInterface(tempfile.mkdtemp(), 500, 0600, 'session')
 
-Session(app)
+CORS(app, supports_credentials=True)
 
 from routes import *
 

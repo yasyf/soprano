@@ -9,7 +9,6 @@ from constants import STARTING, STOPPING
 def preprocess_request():
   if 'watson' not in session:
     session['watson'] = Watson()
-  if 'training' not in session:
     session['training'] = Training()
 
 @app.route('/')
@@ -36,3 +35,4 @@ def control_view():
     session['training'].start(request.form['email'])
   elif request.form['status'] == STOPPING:
     session['training'].stop(request.form['email'])
+  return jsonify({'training': session['training'].current})
