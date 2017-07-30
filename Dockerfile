@@ -43,8 +43,10 @@ RUN pip install --upgrade pip setuptools wheel; \
 
 RUN git clone https://$GIT_CREDS@github.com/suryabhupa/simple-nlu simple_nlu; \
   cd ./simple_nlu; \
+  cp ./client_secret.json ../; \
   pip install -r requirements.txt;
 
 RUN git clone https://$GIT_CREDS@github.com/josephwandile/soprano; \
   cd ./soprano; \
-  npm install;
+  npm install; \
+  npm run build;
