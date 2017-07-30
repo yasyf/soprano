@@ -23,24 +23,35 @@ class Watson(object):
       data=data,
     ).json()
 
+  def get(self, path, params=None, headers=None):
+    return self.session.get(
+      path,
+      params=(params or {}),
+      auth=(self.USERNAME, self.PASSWORD),
+      headers=(headers or {}),
+    ).json()
+
   @property
-  def sequence_id(self):
+  def last_sequence_id(self):
+    return self._sequence_id
+
+  @property
+  def next_sequence_id(self):
     self._sequence_id += 1
     return self._sequence_id
 
   def observe(self, sequence_id):
-    return self.post(self.urls['observe_result'], {'sequence_id': sequence_id, 'interim_results': False})
+    return self.get(self.urls['observe_result'], {'sequence_id': sequence_id, 'interim_results': False})
 
   def recognize(self, file):
-    id_ = self.sequence_id
     return self.post(
       self.urls['recognize'],
       {
-        'sequence_id': id_,
+        'sequence_id': self.next_sequence_id,
         'speaker_labels': True,
         'smart_formatting': True,
         'inactivity_timeout': -1,
       },
       file,
       {'Content-Type': 'audio/wav'}
-    ), id_
+    ), self.last_sequence_id
