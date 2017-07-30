@@ -27,7 +27,8 @@ RUN apt-get update; \
   libpulse-dev \
   python-pyaudio \
   redis-server \
-  nodejs;
+  nodejs \
+  nginx;
 
 RUN git clone https://$GIT_CREDS@github.com/VarunMohan/aaaaaalto speaker-diarization; \
   cd ./speaker-diarization; \
@@ -51,3 +52,5 @@ RUN git clone https://$GIT_CREDS@github.com/josephwandile/soprano; \
   cd ./soprano; \
   npm install; \
   npm run build;
+
+RUN mv ./nginx.conf /etc/nginx/sites-available/default;
