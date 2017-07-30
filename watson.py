@@ -29,14 +29,15 @@ class Watson(object):
     return self._sequence_id
 
   def recognize(self, file):
+    id_ = self.sequence_id
     return self.post(
       self.urls['recognize'],
       {
-        'sequence_id': self.sequence_id,
+        'sequence_id': id_,
         'speaker_labels': True,
         'smart_formatting': True,
         'inactivity_timeout': -1,
       },
       file,
       {'Content-Type': 'audio/wav'}
-    )
+    ), id_
