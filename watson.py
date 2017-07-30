@@ -1,4 +1,4 @@
-import requests, os, redis, json
+import requests, os, redis, json, redis_lock
 
 class Watson(object):
   API_ROOT = 'https://stream.watsonplatform.net/speech-to-text/api/v1'
@@ -65,25 +65,26 @@ class Watson(object):
 
   @property
   def last_sequence_id(self):
-    return self.conn.get(self.key('sequence_id')) or 0
+    return int(self.conn.get(self.key('sequence_id')) or 0)
 
-  @property
   def next_sequence_id(self):
-    return self.conn.incr(self.key('sequence_id'))
+    return int(self.conn.incr(self.key('sequence_id')))
 
   def observe(self, sequence_id):
     return self.get(self.urls['observe_result'], {'sequence_id': sequence_id, 'interim_results': False})
 
   def recognize(self, file):
-    id = self.next_sequence_id
-    return self.post(
-      self.urls['recognize'],
-      {
-        'sequence_id': id,
-        'speaker_labels': True,
-        'smart_formatting': True,
-        'inactivity_timeout': -1,
-      },
-      file,
-      {'Content-Type': 'audio/wav'}
-    ), id
+    with redis_lock.Lock(self.conn, 'recognize/lock'):
+      id = self.next_sequence_id()
+      result = self.post(
+        self.urls['recognize'],
+        {
+          'sequence_id': id,
+          'speaker_labels': True,
+          'smart_formatting': True,
+          'inactivity_timeout': -1,
+        },
+        file,
+        {'Content-Type': 'audio/wav'}
+      )
+      return result, id
