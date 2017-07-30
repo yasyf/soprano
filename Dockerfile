@@ -2,7 +2,7 @@ FROM ubuntu
 
 LABEL authors="Yasyf Mohamedali <yasyfm@gmail.com>"
 
-CMD ["python", "app.py"]
+CMD ["gunicorn", "-b", "127.0.0.1:5000", "-t", "90", "-w", "5", "app:app"]
 
 EXPOSE 5000
 WORKDIR /app
