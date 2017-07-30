@@ -26,6 +26,10 @@ def submit_view():
     transcripts = transcribe_all(request.files['audio'], session['watson'], session['training'].speakers)
     return jsonify({'transcripts': transcripts})
 
+@app.route('/observe/<sequence_id>')
+def observe_view(sequence_id):
+  return jsonify({'transcripts': session['watson'].observe(sequence_id)})
+
 @app.route('/control', methods=['POST'])
 def control_view():
   if request.form['status'] == STARTING:

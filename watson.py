@@ -28,6 +28,9 @@ class Watson(object):
     self._sequence_id += 1
     return self._sequence_id
 
+  def observe(self, sequence_id):
+    return self.post(self.urls['observe_result'], {'sequence_id': sequence_id, 'interim_results': False})
+
   def recognize(self, file):
     id_ = self.sequence_id
     return self.post(
