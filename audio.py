@@ -31,6 +31,7 @@ def detect_speakers(result, speakers):
       output.append({
         'new': segment['speaker'] != current_speaker,
         'last': current_speaker,
+        'username': 'SPEAKER_{}'.format(segment['speaker']),
         'speaker': speakers.get(current_speaker, 'SPEAKER_{}'.format(segment['speaker'])),
         'transcript': current_words,
         'final': segment['final'],

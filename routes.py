@@ -51,7 +51,7 @@ def observe_view(sequence_id):
   if 'speaker_labels' not in transcripts:
     return jsonify({'retry': True, 'error': False, 'id': sequence_id})
   transcripts = detect_speakers(transcripts, g.training.speakers)
-  actions = extract_actions(transcripts)
+  actions = extract_actions(session['id'], g.training.speakers, transcripts)
   return jsonify({'retry': False, 'error': False, 'transcripts': transcripts, 'id': sequence_id, 'actions': actions})
 
 @app.route('/control', methods=['POST'])
